@@ -51,3 +51,19 @@ def forward_propagation(A_precedent, W, b, fct_activation) :
     }
 
     return A, cache
+
+def fonction_cout(Y_pred, Y) :
+    """
+    Argument :
+    Y_pred -- prédictions du modèle (activations de la couche de sortie)
+    Y -- vraies étiquettes
+
+    Returns :
+    cout -- valeur de la fonction de coût
+    """
+
+    m = Y.shape[1]
+
+    cout = -(1/m) * np.sum(Y * np.log(Y_pred) + (1 - Y) * np.log(1 - Y_pred))
+    
+    return cout
