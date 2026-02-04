@@ -15,5 +15,93 @@ def test_init_classique():
 def main():
     test_init_classique()
 
+def reseau_2(X, Y, dimension_couches, learning_rate, epoch) :
+    """
+    Argument :
+    X -- valeurs d'entrées (input)
+    nb_x -- nombre de neurones input layer
+    nb_h -- nombre de neurones hidden layer
+    nb_y -- nombre de neurones output layer
+
+    Return :
+    pred -- valeur de sortie (output)
+    """
+    nb_x = dimension_couches[0]
+    nb_h = dimension_couches[1]
+    nb_y = dimension_couches[2]
+
+    parametres = initialisation_classique(nb_x, nb_h, nb_y)
+
+    W1 = parametres["W1"]
+    b1 = parametres["b1"]
+    W2 = parametres["W2"]
+    b2 = parametres["b2"]
+
+    gradients = {}
+    couts = []
+
+    for i in range (0, epoch) :
+
+        # Forward prop : Lineaire + ReLu -> Lineaire + Sigmoid
+        A1, cache1 = forward_propagation(X, W1, b1, "relu")
+        A2, cache2 = forward_propagation(A1, W2, b2, "sigmoid")
+
+        # Calcul du cout
+        cout = fonction_cout(A2, Y)
+
+        # Backward prop
+        gradients = backward_propagation(cache1, cache2, Y, A2)
+
+        # Changement des poids 
+        parametres = maj_parametres(parametres, gradients, learning_rate)
+
+        W1 = parametres["W1"]
+        b1 = parametres["b1"]
+        W2 = parametres["W2"]
+        b2 = parametres["b2"]
+
+        if i % 100 == 0 or i == epoch - 1 :
+            print("Cout après l'epoch {}: {}".format(i, np.squeeze(cout)))
+        if i % 100 == 0:
+            couts.append(cout)
+
+    return parametres, couts
+
+
 if __name__ == "__main__":
-    main()
+    # main()
+
+    # X : 4 exemples avec 2 caractéristiques
+    X = np.array([[0, 0, 1, 1], 
+                [0, 1, 0, 1]])
+
+    # Y : Le résultat attendu
+    Y = np.array([[0, 1, 1, 0]])
+
+    # Dimensions : 2 entrées -> 15 neurones cachés -> 1 sortie
+    dimension_couches = [2, 15, 1]
+
+    print("----- Démarrage de l'entraînement -----")
+    # On lance ton modèle !
+    parametres_finaux, couts = reseau_2(X, Y, dimension_couches, learning_rate=1, epoch=5000)
+
+    # On fait une prédiction finale pour voir si ça marche
+    W1 = parametres_finaux["W1"]
+    b1 = parametres_finaux["b1"]
+    W2 = parametres_finaux["W2"]
+    b2 = parametres_finaux["b2"]
+
+    A1, _ = forward_propagation(X, W1, b1, "relu")
+    A2_final, _ = forward_propagation(A1, W2, b2, "sigmoid")
+
+    print("\nPrédictions finales du réseau de deux couches :")
+    print(A2_final)
+    print("Vraies étiquettes (Y) :")
+    print(Y)
+
+    # Affichage de la courbe de coût
+    plt.plot(couts)
+    plt.ylabel('Coût')
+    plt.xlabel('Itérations (x100)')
+    plt.title("Courbe d'apprentissage")
+    plt.show()

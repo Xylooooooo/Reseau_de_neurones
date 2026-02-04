@@ -121,7 +121,7 @@ def backward_propagation(cache1, cache2, Y, A2) :
 
     return gradients
 
-def maj_parametres(parametres,gradients, learning_rate) :
+def maj_parametres(parametres, gradients, learning_rate) :
     """
     Argument :
     parametres -- dico comportant paramètres des deux couches
